@@ -16,7 +16,7 @@ class Game:
         return self.winner
 
     def printBoard(self):
-        # the board is 7 columns wide and 6 rows tall
+        # the board is a total of 7 columns wide and 6 rows tall
         # index the board starting from the bottom left
         # so, the bottom left is 0, the bottom right is 6, the top right is 41, etc
         pass
