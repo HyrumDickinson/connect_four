@@ -19,7 +19,7 @@ class Game:
         # the board is a 7 x 6, seven being the horizontal length\
         # the indicies begin in the top left corner, and run horizontally 
         # to the right, like you would read a sentence, so,
-        # mapping the array to the board spaces:
+        # mapping the array to the board squares:      
             # 
             #
             #          0i 1i 2i 3i 4i 5i 6i
