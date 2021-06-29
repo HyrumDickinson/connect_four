@@ -9,28 +9,28 @@ class Game:
         # 0 means that no player has been assigned the value
         # Player_1 goes first
         self.turn = 1 # whose turn is it?
-            # 1 -> player 1
-            # -1 -> player -1
+            # 1   -> player 1
+            # -1  -> player -1
         self.result = 0 # what is the result of the game? 
-            # 0 -> undecided
-            # 1 -> player 1 win
-            # -1 -> player -1 win
-            # 3 -> draw
+            # 0   -> undecided
+            # 1   -> player 1 win
+            # -1  -> player -1 win
+            # 3   -> draw
         # the board is a 7 x 6, seven being the horizontal length
         # the indicies begin in the top left corner, and run horizontally 
         # to the right, like you would read a sentence, so,
         # mapping the array to the board squares:      
             # 
             #
-            #          0i 1i 2i 3i 4i 5i 6i
+            #            0i 1i 2i 3i 4i 5i 6i
             #                   
             #                
-            #    0j    0  1  2  3  4  5  6
-            #    1j    7  8  9  10 11 12 13
-            #    2j    14 15 16 17 18 19 20
-            #    3j    21 22 23 24 25 26 27
-            #    4j    28 29 30 31 32 33 34
-            #    5j    35 36 37 38 39 40 41
+            #     0j     0  1  2  3  4  5  6
+            #     1j     7  8  9  10 11 12 13
+            #     2j     14 15 16 17 18 19 20
+            #     3j     21 22 23 24 25 26 27
+            #     4j     28 29 30 31 32 33 34
+            #     5j     35 36 37 38 39 40 41
             #
             #
         self.board = np.zeros(42, int)
@@ -51,8 +51,7 @@ class Game:
     def getBoard(self):
         return self.board
     def setBoard(self, array):
-        npArray = np.array(array)
-        self.board = npArray
+        self.board = np.array(array)
     def resetGame(self):
         self.turn = 1
         self.result = 0
