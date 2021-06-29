@@ -16,7 +16,7 @@ class Game:
             # 1 -> player 1 win
             # -1 -> player -1 win
             # 3 -> draw
-        # the board is a 7 x 6, seven being the horizontal length\
+        # the board is a 7 x 6, seven being the horizontal length
         # the indicies begin in the top left corner, and run horizontally 
         # to the right, like you would read a sentence, so,
         # mapping the array to the board squares:      
