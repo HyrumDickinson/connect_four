@@ -1,3 +1,4 @@
+git pull
 git push
-cd ..
-cd powershell_scripts
+Set-Location ..
+Set-Location powershell_scripts
