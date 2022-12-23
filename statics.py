@@ -4,7 +4,6 @@ contains statics
 
 from game import Game
 
-
 def matchup(
     player_1: str = 'human',
     player_2: str = 'human',
