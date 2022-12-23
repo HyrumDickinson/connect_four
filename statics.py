@@ -2,7 +2,7 @@
 contains statics
 '''
 
-from game import Game
+from abort_me import Game
 
 def matchup(
     player_1: str = 'human',
@@ -29,7 +29,7 @@ def matchup(
     matches = []
     for _ in range(rounds):
         match = Game()
-        result = match.play(
+        result = Game.match.play(
             player_1=player_1,
             player_2=player_2,
             depth_1=depth_1,
