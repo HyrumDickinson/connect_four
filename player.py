@@ -2,7 +2,8 @@
 contains simple player class
 '''
 
-class player:
+
+class Player:
     '''
     player class
     '''
@@ -29,5 +30,5 @@ class player:
             self.search_depth = 5
 
         if self.goes_first:
-            self.player_name = f'{self.strategy}_player_1'
-        self.player_name = f'{self.strategy}_player_2'
+            self.name = f'{self.strategy}_player_1'
+        self.name = f'{self.strategy}_player_2'

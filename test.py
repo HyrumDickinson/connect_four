@@ -2,15 +2,16 @@
 minimal main launcher
 '''
 
-from abort_me import Game
+from game import Game
+from matchup import matchup
 
 if __name__ == '__main__':
-    tictactoe = Game()
-    tictactoe.play_game('random', 'random')
-    tictactoe.play_matchup('random', 'random')
-    # tictactoe.play_matchup('random', 'minimax')
-    # tictactoe.play_matchup('heuristic', 'random')
-    # tictactoe.play_matchup('heuristic', 'heuristic')
-    # tictactoe.play_matchup('heuristic', 'minimax')
-    # tictactoe.play_matchup('minimax', 'heuristic')
-    # tictactoe.play_matchup('minimax', 'minimax')
+    connect_four = Game('random', 'random')
+    connect_four.play()
+    matchup(connect_four)
+    # connect_four.play_matchup('random', 'minimax')
+    # connect_four.play_matchup('heuristic', 'random')
+    # connect_four.play_matchup('heuristic', 'heuristic')
+    # connect_four.play_matchup('heuristic', 'minimax')
+    # connect_four.play_matchup('minimax', 'heuristic')
+    # connect_four.play_matchup('minimax', 'minimax')

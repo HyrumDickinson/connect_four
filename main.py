@@ -2,7 +2,7 @@
 minimal main launcher
 '''
 
-from abort_me import Game
+from game import Game
 
 if __name__ == '__main__':
     tictactoe = Game()
