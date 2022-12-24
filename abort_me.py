@@ -12,19 +12,6 @@
                 break
         self.board[(j * 7) + i] = self.turn
 
-    def copy_self(self):
-        '''
-        _summary_
-
-        Returns:
-            _type_: _description_
-        '''
-        copy = Game()
-        copy.board = np.array([i for i in self.board])
-        copy.turn = self.turn
-        copy.result = self.result
-        return copy
-
     def get_next_moves(self):
         '''
         _summary_

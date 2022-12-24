@@ -24,7 +24,7 @@ class Board:
     board class
     '''
 
-    def __init__(self, board):
+    def __init__(self, board='new'):
 
         assert (board == 'new' or isinstance(board, np.array))
 
@@ -34,7 +34,21 @@ class Board:
             self.board = board
 
     def reset(self):
+        '''
+        _summary_
+        '''
         self.board = np.zeros(42, int)
+
+    def copy_self(self):
+        '''
+        _summary_
+
+        Returns:
+            _type_: _description_
+        '''
+        copy = Board()
+        copy.board = np.array([i for i in self.board])
+        return copy
 
     def display_valid_moves(self):
         '''
