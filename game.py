@@ -95,10 +95,20 @@ class Game:
             return
 
         if player.strategy == 'human':
-            print('input an integer between 0 and 6')
-            column = int(input('choose an column (between 0 and 6)'))
-            while column not in (0, 1, 2, 3, 4, 5, 6):
-                column = int(input('that was not an integer between 0 and 6. try again: '))
+
+            user_input = input(f'\n{player.name}: input a column (between 0 and 6)')
+            try:
+                column = int(user_input)
+            except Exception:
+                column = 8
+            print(isinstance(user_input, int))
+            print(type(user_input))
+            while column not in range(7):
+                user_input = input('that was not an integer between 0 and 6. try again: ')
+                try:
+                    column = int(user_input)
+                except Exception:
+                    column = 8
             self.__go_u(column)
 
         if player.strategy == 'random':
