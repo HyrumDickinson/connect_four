@@ -3,10 +3,18 @@ contains game class
 '''
 
 import numpy as np
-from duo import Duo
 from board import Board
-from statics import pre_alpha_beta, minimax, next_moves
+from player import Player
 from heuristic import heuristic
+from statics import (
+    pre_alpha_beta,
+    minimax,
+    next_moves,
+    set_select_space_for_la,
+    reset_board,
+    set_space,
+    select_space,
+)
 
 
 class Game:
@@ -21,12 +29,11 @@ class Game:
         depth_2: int = 5
     ):
 
-        self.duo = Duo(player_1, player_2)
-        self.duo.player_1.depth = depth_1
-        self.duo.player_2.depth = depth_2
+        self.player_1 = Player(player_1, True)
+        self.player_2 = Player(player_2, False)
 
-        self.player_1 = self.duo.player_1
-        self.player_2 = self.duo.player_2
+        self.player_1.depth = depth_1
+        self.player_2.depth = depth_2
 
         # each player is assigned a number: 1 or -1
         # 0 means that no player has been assigned the value
@@ -45,80 +52,28 @@ class Game:
         self.result = 0
 
         self.move_count = 0
+        self.board = Board()
 
-        self.board = Board('new')
-
-    def play(self):
+    def play(self) -> None:
         '''
         play the game
         '''
 
-        # setup
-        self.play_first_turns()
-
         # play game
-        while self.result == 0:
-            self.play_turn(self.player_1)
-            if self.result != 0:
-                break
-            self.play_turn(self.player_2)
+        while heuristic(self.board) not in (np.inf, -np.inf):
+            self.play_turn()
 
+        print(f'terminal heuristic eval: {heuristic(self.board)}')
+
+        # display result
         if self.result == 1:
             print(f"{self.player_1.name} beat {self.player_2.name} in {self.move_count} moves")
-        elif self.result == -1:
+        if self.result == -1:
             print(f"{self.player_2.name} beat {self.player_1.name} in {self.move_count} moves")
-        elif self.result == 0:
+        if self.result == 0:
             print(f"{self.player_1.name} drew with {self.player_2.name} after {self.move_count} moves")
 
-    def reset(self):
-        '''
-        reset the game
-        '''
-        self.turn = 1
-        self.result = 0
-        self.board.reset()
-
-    def go_u(self, i: int):
-        '''
-        human plays one turn; computer displays result and information about game
-
-        Args:
-            i (_type_): _description_
-        '''
-        assert (self.result == 0), "this game is over! you can't place pieces anymore."
-        self.board.set_space(self.board.select_space(i), self.turn)
-        if self.turn == -1:
-            self.move_count += 1
-        self.turn = np.negative(self.turn)
-        self.update_result()
-
-    def go_pre_ab(self, depth: int):
-        '''
-        computer plays the pre-alpha-beta minimax recommended turn
-
-        Args:
-            depth (_type_): _description_
-        '''
-        if self.is_first_turn():
-            self.play_first_turn()
-        else:
-            self.go_u(pre_alpha_beta(depth, depth))
-
-    def go_for_la(self, i: int):
-        '''
-        plays one turn for look_ahead function
-
-        Args:
-            i (_type_): _description_
-        '''
-        self.board.set_select_space_for_la(i)
-        self.turn = np.negative(self.turn)
-        self.update_result()
-
-    def play_turn(
-        self,
-        player,
-    ):
+    def play_turn(self) -> None:
         '''
         play a turn in tictactoe
 
@@ -128,57 +83,100 @@ class Game:
             depth (int, optional): _description_. Defaults to 4.
         '''
 
+        if self.turn == 1:
+            player = self.player_1
+        else:
+            player = self.player_2
+
+        depth = player.depth
+
         if self.result != 0:
             self.reset()
             return
 
         if player.strategy == 'human':
-            print('input an integer between 0 and 6, inclusive')
-            column = int(input('which column do you choose to place your piece in? '))
+            print('input an integer between 0 and 6')
+            column = int(input('choose an column (between 0 and 6)'))
             while column not in (0, 1, 2, 3, 4, 5, 6):
                 column = int(input('that was not an integer between 0 and 6. try again: '))
-            self.go_u(column)
+            self.__go_u(column)
 
         if player.strategy == 'random':
-            column = np.random.randint(0, 6)
+            column = np.random.randint(0, 7)
             while self.board.spaces[column] != 0:
-                column = np.random.randint(0, 6)
-            self.go_u(column)
+                column = np.random.randint(0, 7)
+            self.__go_u(column)
 
         if player.strategy == 'heuristic':
-            if self.is_first_turn():
-                self.play_first_turn()
-            else:
-                if self.is_first_turn():
-                    self.play_first_turn()
-                else:
-                    self.go_u(self.look_ahead())
+            self.__go_u(self.__look_ahead())
 
         if player.strategy == 'minimax':
-            if self.is_first_turn():
-                self.play_first_turn()
-            else:
-                assert (depth > 0), 'minimax cannot search to a depth less than one'
-                if self.is_first_turn():
-                    self.play_first_turn()
-                else:
-                    self.go_u(minimax(depth, depth, -np.inf, np.inf))
+            assert (depth > 0), 'minimax cannot search to a depth less than one'
+            self.__go_u(minimax(self.board, depth, depth, -np.inf, np.inf))
 
-    def play_first_turn(self):
+        # update turn
+        assert self.turn in (-1, 1)
+        self.turn = np.negative(self.turn)
+
+    def reset(self) -> None:
+        '''
+        reset the game
+        '''
+        self.turn = 1
+        self.result = 0
+        reset_board(self.board)
+
+    def __go_u(self, column: int) -> None:
+        '''
+        human plays one turn; computer displays result and information about game
+
+        Args:
+            column (int): _description_
+        '''
+        assert (self.result == 0), "this game is over! you can't place pieces anymore."
+        set_space(self.board, select_space(self.board, column), self.turn)
+        if self.turn == -1:
+            self.move_count += 1
+        self.__update_result()
+
+    def __go_pre_ab(self, depth: int) -> None:
+        '''
+        computer plays the pre-alpha-beta minimax recommended turn
+
+        Args:
+            depth (_type_): _description_
+        '''
+        if self.__is_first_turn():
+            self.__play_first_turn()
+        else:
+            self.__go_u(pre_alpha_beta(self.board, depth, depth))
+
+    def __go_for_la(self, i: int) -> None:
+        '''
+        plays one turn for __look_ahead function
+
+        Args:
+            i (_type_): _description_
+        '''
+        set_select_space_for_la(self.board.spaces, i)
+        self.turn = np.negative(self.turn)
+        self.__update_result()
+
+    def __play_first_turn(self) -> None:
         '''
         plays a random non-side move for a first turn
         '''
-        self.go_u(np.random.randint(1, 5))
+        self.__go_u(np.random.randint(1, 5))
 
-    def play_first_turns(self):
+    def __play_first_turns(self) -> None:
         '''
         plays two random non-side moves. designed to start games where both sides
         are played by robots
         '''
-        self.go_u(np.random.randint(1, 5))
-        self.go_u(np.random.randint(1, 5))
+        for _ in range(2):
+            self.__go_u(np.random.randint(1, 5))
 
-    def is_first_turn(self):
+    def __is_first_turn(self) -> bool:
         '''
         checks to see if both players have made at least one move
         if not, returns True
@@ -189,14 +187,14 @@ class Game:
         one_move = False
         two_moves = False
         for i in range(42):
-            if self.board[i] != 0:
+            if self.board.spaces[i] != 0:
                 if not one_move:
                     two_moves = True
                 else:
                     one_move = True
         return not two_moves
 
-    def look_ahead(self):
+    def __look_ahead(self) -> int:
         '''
         looks one move ahead and chooses the best move based on heuristic
 
@@ -216,7 +214,8 @@ class Game:
         # marks columns where plays are not valid
         for i in range(7):
             if possible_moves[i].board[i] == 0:
-                possible_moves[i].go_for_la(i)
+                self.__go_for_la(i)
+                # possible_moves[i].__go_for_la(i)
                 if self.turn == 1:
                     best_heuristic = -np.inf
                     if heuristic(possible_moves[i]) > best_heuristic:
@@ -232,7 +231,7 @@ class Game:
         # after all comparisons are completed
         return best_column
 
-    def update_result(self):
+    def __update_result(self) -> None:
         '''
         vital function that updates self.result. This function works!
         '''
@@ -278,7 +277,8 @@ class Game:
                         == self.board.spaces[((j + 3) * 7) + i])):
                     self.result = self.board.spaces[(j * 7) + i]
                     return
-        # if no wins are found, self.result = 0is set to 0.
+
+        # if no wins are found, self.result is set to 0.
         # This could be useful if I decide to integrate move takebacks
 
         # check draw (i.e. is the board full)

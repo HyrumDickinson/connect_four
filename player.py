@@ -8,7 +8,7 @@ class Player:
     player class
     '''
 
-    def __init__(self, strategy: str, goes_first: bool):
+    def __init__(self, strategy: str, my_turn: bool, depth: int = 3):
 
         assert strategy in (
             'human',
@@ -18,7 +18,8 @@ class Player:
         )
 
         self.strategy = strategy
-        self.goes_first = goes_first
+        self.my_turn = my_turn
+        self.depth = depth
 
         if self.strategy == 'human':
             self.search_depth = 0
@@ -29,6 +30,11 @@ class Player:
         if self.strategy == 'minimax':
             self.search_depth = 5
 
-        if self.goes_first:
+        # this only runs when player is created
+        # when it's player_1's turn
+        if self.my_turn:
             self.name = f'{self.strategy}_player_1'
-        self.name = f'{self.strategy}_player_2'
+            self.token = 1
+        else:
+            self.name = f'{self.strategy}_player_2'
+            self.token = -1

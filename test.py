@@ -6,12 +6,11 @@ from game import Game
 from matchup import matchup
 
 if __name__ == '__main__':
-    connect_four = Game('random', 'random')
-    connect_four.play()
-    matchup(connect_four)
-    # connect_four.play_matchup('random', 'minimax')
-    # connect_four.play_matchup('heuristic', 'random')
-    # connect_four.play_matchup('heuristic', 'heuristic')
-    # connect_four.play_matchup('heuristic', 'minimax')
-    # connect_four.play_matchup('minimax', 'heuristic')
-    # connect_four.play_matchup('minimax', 'minimax')
+    game = Game('random', 'random')
+    matchup(game)
+    # game.play_matchup('random', 'minimax')
+    # game.play_matchup('heuristic', 'random')
+    # game.play_matchup('heuristic', 'heuristic')
+    # game.play_matchup('heuristic', 'minimax')
+    # game.play_matchup('minimax', 'heuristic')
+    # game.play_matchup('minimax', 'minimax')
