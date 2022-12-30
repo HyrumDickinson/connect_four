@@ -37,8 +37,8 @@ def heuristic(board: Board) -> int:
             score += space_heuristic(board, column, row)
             if score in (np.inf, -np.inf):
                 return score
-    print_board(board)
-    print(f'heuristic eval: {score}')
+    # print_board(board)
+    # print(f'heuristic eval: {score}')
     return score
 
 

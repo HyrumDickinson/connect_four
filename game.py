@@ -2,7 +2,6 @@
 contains game class
 '''
 
-import random
 import numpy as np
 from board import Board
 from player import Player
@@ -25,8 +24,8 @@ class Game:
         self,
         player_1: str = 'human',
         player_2: str = 'human',
-        depth_1: int = 5,
-        depth_2: int = 5
+        depth_1: int = 3,
+        depth_2: int = 3
     ):
 
         self.player_1 = Player(player_1, True)
@@ -143,11 +142,11 @@ class Game:
             drop_piece_into_column(self.board, column)
 
         if player.strategy == 'heuristic':
-            drop_piece_into_column(self.board, self.__look_ahead())
+            drop_piece_into_column(self.board, minimax(self.board)[0])
 
         if player.strategy == 'minimax':
             assert (depth > 0), 'minimax cannot search to a depth less than one'
-            drop_piece_into_column(self.board, minimax(self.board, depth, depth, -np.inf, np.inf))
+            drop_piece_into_column(self.board, minimax(self.board, depth, depth, -np.inf, np.inf)[0])
 
         # update turn
         assert self.turn in (-1, 1)
@@ -163,48 +162,6 @@ class Game:
         self.result = 0
         self.move_count = 0
         reset_board(self.board)
-
-    def __look_ahead(self) -> int:
-        '''
-        looks one move ahead and chooses the best move based on heuristic
-
-        Returns:
-            int: _description_
-        '''
-
-        assert (self.result == 0), 'cannot calculate future moves on a finished game'
-        # possible_moves is a 7-index array of games,
-        # each index representing the board state if
-        # a move is made in the column with the
-        # same i-number as the array index
-        possible_moves = next_moves(self.board)
-        assert isinstance(possible_moves, dict)
-        # sets start to correspond to something valid
-        # creates an initial best, which will be updated
-        # each time it is compared with another move
-        # plays move where move plays are valid,
-        # marks columns where plays are not valid
-
-        best_heuristic = current_player(self.board) * -np.inf
-        best_columns = []
-        for column in possible_moves:
-            if heuristic(possible_moves[column]) * current_player(self.board) > best_heuristic * current_player(self.board):
-                best_heuristic = heuristic(possible_moves[column])
-                # overwrite best_column to be set only containing best move
-                best_columns = [column]
-            elif heuristic(possible_moves[column]) * current_player(self.board) == best_heuristic * current_player(self.board):
-                # if move equally good as current best move
-                # add move to set of equally best moves
-                best_columns.append(column)
-
-        # best_move, the position, exists for comparison against other positions
-        # best_column, the column, exists to be returned
-        # after all comparisons are completed
-        print(f'best_columns are {best_columns}')
-        assert isinstance(best_columns, list)
-        best_column = random.choice(best_columns)
-        print(f'best_column (randomly chosen) is {best_column}')
-        return best_column
 
     def __update_result(self) -> None:
         '''
