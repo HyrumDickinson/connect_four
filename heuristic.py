@@ -4,7 +4,7 @@ gives a rating of position based only on current location of pieces (no looking 
 '''
 import numpy as np
 from board import Board
-from statics import current_player, can_place, print_board
+from board_functions import current_player, can_place, print_board
 
 # INTELLIGENCE
 # to do:
@@ -32,11 +32,9 @@ def heuristic(board: Board) -> int:
     # player 2 will earn negative points
 
     # Wins
-
-    for j in range(6):
-        for i in range(7):
-            score += space_heuristic(board, i, j)
-
+    for row in range(6):
+        for column in range(7):
+            score += space_heuristic(board, column, row)
             if score in (np.inf, -np.inf):
                 return score
     print_board(board)
@@ -44,14 +42,14 @@ def heuristic(board: Board) -> int:
     return score
 
 
-def space_heuristic(board: Board, i: int, j: int) -> int:
+def space_heuristic(board: Board, column: int, row: int) -> int:
     '''
     _summary_
 
     Args:
         board (Board): _description_
-        i (int): _description_
-        j (int): _description_
+        column (int): _description_
+        row (int): _description_
 
     Returns:
         _type_: _description_
@@ -61,68 +59,77 @@ def space_heuristic(board: Board, i: int, j: int) -> int:
 
     # check horizontal wins
     if (
-        i < 4 and
-        board.spaces[(j * 7) + i] != 0 and
-        (board.spaces[(j * 7) + i]
-            == board.spaces[(j * 7) + i + 1]
-            == board.spaces[(j * 7) + i + 2]
-            == board.spaces[(j * 7) + i + 3])
+        column < 4 and
+        board.spaces[(row * 7) + column] != 0 and
+        (board.spaces[(row * 7) + column]
+            == board.spaces[(row * 7) + column + 1]
+            == board.spaces[(row * 7) + column + 2]
+            == board.spaces[(row * 7) + column + 3])
     ):
-        return np.inf * board.spaces[(j * 7) + i]
+        return np.inf * board.spaces[(row * 7) + column]
 
     # check downwards diagonal wins
-    if (i < 4 and j < 3
-        and (board.spaces[(j * 7) + i] != 0)
+    if (
+        column < 4 and row < 3
+        and (board.spaces[(row * 7) + column] != 0)
         and (
-            board.spaces[(j * 7) + i]
-            == board.spaces[((j + 1) * 7) + i + 1]
-            == board.spaces[((j + 2) * 7) + i + 2]
-            == board.spaces[((j + 3) * 7) + i + 3])
+            board.spaces[(row * 7) + column]
+            == board.spaces[((row + 1) * 7) + column + 1]
+            == board.spaces[((row + 2) * 7) + column + 2]
+            == board.spaces[((row + 3) * 7) + column + 3])
     ):
-        return np.inf * board.spaces[(j * 7) + i]
+        return np.inf * board.spaces[(row * 7) + column]
 
     # check upwards diagonal wins
-    if (i < 4 and j > 2
-        and (board.spaces[(j * 7) + i] != 0)
+    if (
+        column < 4 and row > 2
+        and (board.spaces[(row * 7) + column] != 0)
         and (
-            board.spaces[(j * 7) + i]
-            == board.spaces[((j - 1) * 7) + i + 1]
-            == board.spaces[((j - 2) * 7) + i + 2]
-            == board.spaces[((j - 3) * 7) + i + 3])
+            board.spaces[(row * 7) + column]
+            == board.spaces[((row - 1) * 7) + column + 1]
+            == board.spaces[((row - 2) * 7) + column + 2]
+            == board.spaces[((row - 3) * 7) + column + 3])
     ):
-        return np.inf * board.spaces[(j * 7) + i]
+        return np.inf * board.spaces[(row * 7) + column]
 
     # check vertical wins
-    if (j < 3
-        and (board.spaces[(j * 7) + i] != 0)
+    if (
+        row < 3
+        and (board.spaces[(row * 7) + column] != 0)
         and (
-            board.spaces[(j * 7) + i]
-            == board.spaces[((j + 1) * 7) + i]
-            == board.spaces[((j + 2) * 7) + i]
-            == board.spaces[((j + 3) * 7) + i])
+            board.spaces[(row * 7) + column]
+            == board.spaces[((row + 1) * 7) + column]
+            == board.spaces[((row + 2) * 7) + column]
+            == board.spaces[((row + 3) * 7) + column])
     ):
-        return np.inf * board.spaces[(j * 7) + i]
+        return np.inf * board.spaces[(row * 7) + column]
 
     # Verticals
 
     # two vertical with an empty space on top
-    if (1 < j < 6
-        and (board.spaces[(j * 7) + i] != 0)
+    if (
+        1 < row < 6
+        and (board.spaces[(row * 7) + column] != 0)
         and (
-            board.spaces[(j * 7) + i]
-            == board.spaces[((j - 1) * 7) + i])
-        and (board.spaces[((j - 2) * 7) + i] == 0)):
-            score += current_player(board)
+            board.spaces[(row * 7) + column]
+            == board.spaces[((row - 1) * 7) + column])
+        and (board.spaces[((row - 2) * 7) + column] == 0)
+    ):
+        score += current_player(board)
 
     # three vertical with an empty space on top
-    if (2 < j < 6
-        and (board.spaces[(j * 7) + i] != 0)
-        and (board.spaces[(j * 7) + i]
-            == board.spaces[((j - 1) * 7) + i]
-            == board.spaces[((j - 2) * 7) + i])
-        and (board.spaces[((j - 3) * 7) + i] == 0)):
-        if (board.spaces[(j * 7) + i] == current_player(board)
-        and can_place(board, ((j - 3) * 7) + i)
+    if (
+        2 < row < 6
+        and (board.spaces[(row * 7) + column] != 0)
+        and (
+            board.spaces[(row * 7) + column]
+            == board.spaces[((row - 1) * 7) + column]
+            == board.spaces[((row - 2) * 7) + column])
+        and (board.spaces[((row - 3) * 7) + column] == 0)
+    ):
+        if (
+            board.spaces[(row * 7) + column] == current_player(board)
+            and can_place(board, ((row - 3) * 7) + column)
         ):
             score += 1000 * current_player(board)
         else:
@@ -131,33 +138,36 @@ def space_heuristic(board: Board, i: int, j: int) -> int:
     # Horizontals and diagonals
 
     # horizontals
-    if i < 4:
-        if board.spaces[(j * 7) + i] != 0:
+    if column < 4:
+        if board.spaces[(row * 7) + column] != 0:
             if (
-            # 1110
-                        (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[(j * 7) + i + 1]
-                == board.spaces[(j * 7) + i + 2])
-                and (0
-                == board.spaces[(j * 7) + i + 3])
-                        )
-            # 1101
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[(j * 7) + i + 1]
-                == board.spaces[(j * 7) + i + 3])
-                and (0
-                == board.spaces[(j * 7) + i + 2])
-                        )
-            # 1011
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[(j * 7) + i + 2]
-                == board.spaces[(j * 7) + i + 3])
-                and (0
-                == board.spaces[(j * 7) + i + 1])
-                        )
+                    # 1110
+                    (
+                    (
+                        board.spaces[(row * 7) + column]
+                        == board.spaces[(row * 7) + column + 1]
+                        == board.spaces[(row * 7) + column + 2])
+                    and (
+                        0 == board.spaces[(row * 7) + column + 3])
+                )
+                    # 1101
+                or (
+                    (
+                        board.spaces[(row * 7) + column]
+                        == board.spaces[(row * 7) + column + 1]
+                        == board.spaces[(row * 7) + column + 3])
+                    and (
+                        0 == board.spaces[(row * 7) + column + 2])
+                )
+                    # 1011
+                or (
+                    (
+                        board.spaces[(row * 7) + column]
+                        == board.spaces[(row * 7) + column + 2]
+                        == board.spaces[(row * 7) + column + 3])
+                    and (
+                        0 == board.spaces[(row * 7) + column + 1])
+                )
             ):
 
                 # each configuration will have one empty space, so
@@ -166,330 +176,341 @@ def space_heuristic(board: Board, i: int, j: int) -> int:
                 # filled spaceswhat those spaces are will depend on
                 # which OR in the previous IF condition was true
 
-                if ((board.spaces[(j * 7) + i] == current_player(board))
+                if (
+                    (board.spaces[(row * 7) + column] == current_player(board))
                     and (
-                        can_place(board, (j * 7) + i + 1)
-                    or can_place(board, (j * 7) + i + 2)
-                    or can_place(board, (j * 7) + i + 3)
-                            )
+                        can_place(board, (row * 7) + column + 1)
+                        or can_place(board, (row * 7) + column + 2)
+                        or can_place(board, (row * 7) + column + 3)
+                    )
                 ):
                     score += 1000 * current_player(board)
                 else:
                     score += 7 * current_player(board)
             if (
-            # 1100
-                        (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[(j * 7) + i + 1])
-                and (0
-                == board.spaces[(j * 7) + i + 2]
-                == board.spaces[(j * 7) + i + 3])
-                        )
-            # 1010
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[(j * 7) + i + 2])
-                and (0
-                == board.spaces[(j * 7) + i + 1]
-               == board.spaces[(j * 7) + i + 3])
-                        )
-            # 1001
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[(j * 7) + i + 3])
-                and (0
-                == board.spaces[(j * 7) + i + 1]
-                == board.spaces[(j * 7) + i + 2])
-                        )
+                # 1100
+                (
+                    (
+                        board.spaces[(row * 7) + column]
+                        == board.spaces[(row * 7) + column + 1])
+                    and (
+                        0 == board.spaces[(row * 7) + column + 2]
+                        == board.spaces[(row * 7) + column + 3])
+                )
+                # 1010
+                or (
+                    (
+                        board.spaces[(row * 7) + column]
+                        == board.spaces[(row * 7) + column + 2])
+                    and (
+                        0 == board.spaces[(row * 7) + column + 1]
+                        == board.spaces[(row * 7) + column + 3])
+                )
+                # 1001
+                or (
+                    (
+                        board.spaces[(row * 7) + column]
+                        == board.spaces[(row * 7) + column + 3])
+                    and (
+                        0 == board.spaces[(row * 7) + column + 1]
+                        == board.spaces[(row * 7) + column + 2])
+                )
             ):
-                if board.spaces[(j * 7) + i] == current_player(board):
+                if board.spaces[(row * 7) + column] == current_player(board):
                     score += current_player(board)
                 else:
                     score -= current_player(board)
         else:
-            if board.spaces[(j * 7) + i + 1] != 0:
+            if board.spaces[(row * 7) + column + 1] != 0:
                 # 0111
-                if (board.spaces[(j * 7) + i + 1]
-                    == board.spaces[(j * 7) + i + 2]
-                    == board.spaces[(j * 7) + i + 3]
+                if (
+                    board.spaces[(row * 7) + column + 1]
+                    == board.spaces[(row * 7) + column + 2]
+                    == board.spaces[(row * 7) + column + 3]
                 ):
-                    if ((board.spaces[(j * 7) + i + 1] == current_player(board))
-                    and (can_place(board, (j * 7) + i))
+                    if (
+                        (board.spaces[(row * 7) + column + 1] == current_player(board))
+                        and (can_place(board, (row * 7) + column))
                     ):
                         score += 1000 * current_player(board)
-                    elif (board.spaces[(j * 7) + i + 1] == current_player(board)
-                    # and not can_place(board, the empty space)
+                    elif (
+                        board.spaces[(row * 7) + column + 1] == current_player(board)
                     ):
                         score += 7 * current_player(board)
                     else:
-                    # if the player who isn't about to make a move
-                    # has the advantago_us formation
                         score -= 7 * current_player(board)
                 if (
-                # 0110
+                    # 0110
                             (
-                    (board.spaces[(j * 7) + i + 1]
-                    == board.spaces[(j * 7) + i + 2])
+                    (board.spaces[(row * 7) + column + 1]
+                    == board.spaces[(row * 7) + column + 2])
                     and (0
-                    == board.spaces[(j * 7) + i + 3])
+                    == board.spaces[(row * 7) + column + 3])
                             )
                 # 0101
                 or (
-                    (board.spaces[(j * 7) + i + 1]
-                    == board.spaces[(j * 7) + i + 3])
+                    (board.spaces[(row * 7) + column + 1]
+                    == board.spaces[(row * 7) + column + 3])
                     and (0
-                    == board.spaces[(j * 7) + i + 2])
+                    == board.spaces[(row * 7) + column + 2])
                             )
                 ):
-                    if board.spaces[(j * 7) + i + 1] == current_player(board):
+                    if board.spaces[(row * 7) + column + 1] == current_player(board):
                         score += current_player(board)
                     else:
                         score -= current_player(board)
             else:
                 # 0011
-                if ((board.spaces[(j * 7) + i + 2] != 0)
+                if ((board.spaces[(row * 7) + column + 2] != 0)
                 and (
-                        board.spaces[(j * 7) + i + 2]
-                    == board.spaces[(j * 7) + i + 3]
+                        board.spaces[(row * 7) + column + 2]
+                    == board.spaces[(row * 7) + column + 3]
                             )
                 ):
-                    if board.spaces[(j * 7) + i + 2] == current_player(board):
+                    if board.spaces[(row * 7) + column + 2] == current_player(board):
                         score += current_player(board)
                     else:
                         score -= current_player(board)
 
     # upwards diagonals
-    if i < 4 and j > 2:
-        if board.spaces[(j * 7) + i] != 0:
+    if column < 4 and row > 2:
+        if board.spaces[(row * 7) + column] != 0:
             if (
             # 1110
-                        (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j - 1) * 7) + i + 1]
-                == board.spaces[((j - 2) * 7) + i + 2])
-                and (0
-                == board.spaces[((j - 3) * 7) + i + 3])
-                        )
-            # 1101
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j - 1) * 7) + i + 1]
-                == board.spaces[((j - 3) * 7) + i + 3])
-                and (0
-                == board.spaces[((j - 2) * 7) + i + 2])
-                        )
-            # 1011
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j - 2) * 7) + i + 2]
-                == board.spaces[((j - 3) * 7) + i + 3])
-                and (0
-                == board.spaces[((j - 1) * 7) + i + 1])
-                        )
+                    (
+                    (board.spaces[(row * 7) + column]
+                    == board.spaces[((row - 1) * 7) + column + 1]
+                    == board.spaces[((row - 2) * 7) + column + 2])
+                    and (0 == board.spaces[((row - 3) * 7) + column + 3])
+                )
+                # 1101
+                or (
+                    (board.spaces[(row * 7) + column]
+                    == board.spaces[((row - 1) * 7) + column + 1]
+                    == board.spaces[((row - 3) * 7) + column + 3])
+                    and (0 == board.spaces[((row - 2) * 7) + column + 2])
+                )
+                # 1011
+                or (
+                    (board.spaces[(row * 7) + column]
+                    == board.spaces[((row - 2) * 7) + column + 2]
+                    == board.spaces[((row - 3) * 7) + column + 3])
+                    and (0 == board.spaces[((row - 1) * 7) + column + 1])
+                )
             ):
                 # each scenario will have an empty space, so only
                 # 1 of the following IF's OR conditions can be true
                 # the others will be checking already-filled spaces
                 # what those spaces are will depend on which OR in
                 # the previous IF condition was true
-                if ((board.spaces[(j * 7) + i] == current_player(board))
+                if (
+                    (board.spaces[(row * 7) + column] == current_player(board))
                     and (
-                        can_place(board, ((j - 3) * 7) + i + 3)
-                    or can_place(board, ((j - 2) * 7) + i + 2)
-                    or can_place(board, ((j - 1) * 7) + i + 1)
-                            )
+                        can_place(board, ((row - 3) * 7) + column + 3)
+                        or can_place(board, ((row - 2) * 7) + column + 2)
+                        or can_place(board, ((row - 1) * 7) + column + 1)
+                    )
                 ):
                     score += 1000 * current_player(board)
-                elif (board.spaces[(j * 7) + i] == current_player(board)
-                # and not can_place(board, the empty space)
+                elif (
+                    board.spaces[(row * 7) + column] == current_player(board)
                 ):
                     score += 7 * current_player(board)
                 else:
-                # if the player who isn't about to make a move has
-                # the advantago_us formation
                     score -= 7 * current_player(board)
-            if (
-            # 1100
+                if (
+                    # 1100
                         (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j - 1) * 7) + i + 1])
-                and (0
-                == board.spaces[((j - 2) * 7) + i + 2]
-                == board.spaces[((j - 3) * 7) + i + 3])
-                        )
-            # 1010
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j - 2) * 7) + i + 2])
-                and (0
-                == board.spaces[((j - 1) * 7) + i + 1]
-                == board.spaces[((j - 3) * 7) + i + 3])
-                        )
-            # 1001
-            or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j - 3) * 7) + i + 3])
-                and (0
-                == board.spaces[((j - 1) * 7) + i + 1]
-                == board.spaces[((j - 2) * 7) + i + 2])
-                        )
-            ):
-                if board.spaces[(j * 7) + i] == current_player(board):
-                    score += current_player(board)
-                else:
-                    score -= current_player(board)
-        else:
-            if board.spaces[((j - 1) * 7) + i + 1] != 0:
-                # 0111
-                if (board.spaces[((j - 1) * 7) + i + 1]
-                    == board.spaces[((j - 2) * 7) + i + 2]
-                    == board.spaces[((j - 3) * 7) + i + 3]
+                        (board.spaces[(row * 7) + column]
+                        == board.spaces[((row - 1) * 7) + column + 1])
+                        and (0
+                        == board.spaces[((row - 2) * 7) + column + 2]
+                        == board.spaces[((row - 3) * 7) + column + 3])
+                    )
+                    # 1010
+                    or (
+                        (board.spaces[(row * 7) + column]
+                        == board.spaces[((row - 2) * 7) + column + 2])
+                        and (0
+                        == board.spaces[((row - 1) * 7) + column + 1]
+                        == board.spaces[((row - 3) * 7) + column + 3])
+                    )
+                    # 1001
+                    or (
+                        (board.spaces[(row * 7) + column]
+                        == board.spaces[((row - 3) * 7) + column + 3])
+                        and (0
+                        == board.spaces[((row - 1) * 7) + column + 1]
+                        == board.spaces[((row - 2) * 7) + column + 2])
+                    )
                 ):
-                    if ((board.spaces[((j - 1) * 7) + i + 1] == current_player(board))
-                        and (can_place(board, (j * 7) + i))
+                    if board.spaces[(row * 7) + column] == current_player(board):
+                        score += current_player(board)
+                    else:
+                        score -= current_player(board)
+        else:
+            if board.spaces[((row - 1) * 7) + column + 1] != 0:
+                # 0111
+                if (board.spaces[((row - 1) * 7) + column + 1]
+                    == board.spaces[((row - 2) * 7) + column + 2]
+                    == board.spaces[((row - 3) * 7) + column + 3]
+                ):
+                    if (
+                        (board.spaces[((row - 1) * 7) + column + 1] == current_player(board))
+                        and (can_place(board, (row * 7) + column))
                     ):
                         score += 1000 * current_player(board)
-                    elif (board.spaces[((j - 1) * 7) + i + 1] == current_player(board)
-                        # and not can_place(board, the empty space)
+                    elif (board.spaces[((row - 1) * 7) + column + 1] == current_player(board)
                     ):
                         score += 7 * current_player(board)
                     else:
-                        # if the player who isn't about to make a move
-                        # has the advantago_us formation
                         score -= 7 * current_player(board)
                 if (
                     # 0110
                         (
                             (
-                                board.spaces[((j - 1) * 7) + i + 1]
-                            == board.spaces[((j - 2) * 7) + i + 2]
+                                board.spaces[((row - 1) * 7) + column + 1]
+                            == board.spaces[((row - 2) * 7) + column + 2]
                         )
-                        and (0
-                        == board.spaces[((j - 3) * 7) + i + 3])
+                        and (0 == board.spaces[((row - 3) * 7) + column + 3])
                     )
                     # 0101
                     or (
-                        (board.spaces[((j - 1) * 7) + i + 1]
-                        == board.spaces[((j - 3) * 7) + i + 3])
-                        and (0
-                        == board.spaces[((j - 2) * 7) + i + 2])
+                        (board.spaces[((row - 1) * 7) + column + 1]
+                        == board.spaces[((row - 3) * 7) + column + 3])
+                        and (0 == board.spaces[((row - 2) * 7) + column + 2])
                     )
                 ):
                     score += current_player(board)
 
             else:
                 # 0011
-                if ((board.spaces[((j - 2) * 7) + i + 2] != 0)
+                if ((board.spaces[((row - 2) * 7) + column + 2] != 0)
                 and (
-                        board.spaces[((j - 2) * 7) + i + 2]
-                    == board.spaces[((j - 3) * 7) + i + 3]
-                            )
+                        board.spaces[((row - 2) * 7) + column + 2]
+                    == board.spaces[((row - 3) * 7) + column + 3]
+                )
                 ):
                     score += current_player(board)
 
     # downwards diagonals
-    if i < 4 and j < 3:
-        if board.spaces[(j * 7) + i] != 0:
+    if column < 4 and row < 3:
+        if board.spaces[(row * 7) + column] != 0:
             if (
             # 1110
                         (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j + 1) * 7) + i + 1]
-                == board.spaces[((j + 2) * 7) + i + 2])
+                (board.spaces[(row * 7) + column]
+                == board.spaces[((row + 1) * 7) + column + 1]
+                == board.spaces[((row + 2) * 7) + column + 2])
                 and (0
-                == board.spaces[((j + 3) * 7) + i + 3])
+                == board.spaces[((row + 3) * 7) + column + 3])
                         )
             # 1101
-            or        (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j + 1) * 7) + i + 1]
-                == board.spaces[((j + 3) * 7) + i + 3])
+            or (
+                (
+                board.spaces[(row * 7) + column]
+                == board.spaces[((row + 1) * 7) + column + 1]
+                == board.spaces[((row + 3) * 7) + column + 3])
                 and (0
-                == board.spaces[((j + 2) * 7) + i + 2])
-                        )
+                == board.spaces[((row + 2) * 7) + column + 2])
+                )
             # 1011
             or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j + 2) * 7) + i + 2]
-                == board.spaces[((j + 3) * 7) + i + 3])
-                and (0
-                == board.spaces[((j + 1) * 7) + i + 1])
-                        )
+                (
+                    board.spaces[(row * 7) + column]
+                    == board.spaces[((row + 2) * 7) + column + 2]
+                    == board.spaces[((row + 3) * 7) + column + 3])
+                and (
+                    0
+                    == board.spaces[((row + 1) * 7) + column + 1])
+                )
             ):
                 # each configuration will have one empty space, so only
                 # one of the following IF's OR conditions can be true
                 # the others will be checking already-filled spaces
                 # what those spaces are will depend on which OR in
                 # the previous IF condition was true
-                if ((board.spaces[(j * 7) + i] == current_player(board))
+                if (
+                    (board.spaces[(row * 7) + column] == current_player(board))
                     and (
-                        can_place(board, ((j + 3) * 7) + i + 3)
-                    or can_place(board, ((j + 2) * 7) + i + 2)
-                    or can_place(board, ((j + 1) * 7) + i + 1)
+                        can_place(board, ((row + 3) * 7) + column + 3)
+                        or can_place(board, ((row + 2) * 7) + column + 2)
+                        or can_place(board, ((row + 1) * 7) + column + 1)
                             )
                 ):
                     score += 1000 * current_player(board)
-                elif (board.spaces[(j * 7) + i] == current_player(board)
-                # and not can_place(board, the empty space)
+                elif (
+                    board.spaces[(row * 7) + column] == current_player(board)
                 ):
                     score += 7 * current_player(board)
                 else:
-                # if the player who isn't about to make a move has
-                # the advantago_us formation
                     score -= 7 * current_player(board)
             if (
-            # 1100
-                        (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j + 1) * 7) + i + 1])
-                and (0
-                == board.spaces[((j + 2) * 7) + i + 2]
-                == board.spaces[((j + 3) * 7) + i + 3])
-                        )
+                # 1100
+                (
+                (
+                    board.spaces[(row * 7) + column]
+                    == board.spaces[((row + 1) * 7) + column + 1])
+                and (
+                    0
+                    == board.spaces[((row + 2) * 7) + column + 2]
+                    == board.spaces[((row + 3) * 7) + column + 3])
+                )
             # 1010
             or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j + 2) * 7) + i + 2])
-                and (0
-                == board.spaces[((j + 1) * 7) + i + 1]
-                == board.spaces[((j + 3) * 7) + i + 3])
-                        )
+                (
+                    board.spaces[(row * 7) + column]
+                    == board.spaces[((row + 2) * 7) + column + 2])
+                and (
+                    0
+                    == board.spaces[((row + 1) * 7) + column + 1]
+                    == board.spaces[((row + 3) * 7) + column + 3])
+                )
             # 1001
             or (
-                (board.spaces[(j * 7) + i]
-                == board.spaces[((j + 3) * 7) + i + 3])
-                and (0
-                == board.spaces[((j + 1) * 7) + i + 1]
-                == board.spaces[((j + 2) * 7) + i + 2])
-                        )
+                (
+                    board.spaces[(row * 7) + column]
+                    == board.spaces[((row + 3) * 7) + column + 3])
+                and (
+                    0
+                    == board.spaces[((row + 1) * 7) + column + 1]
+                    == board.spaces[((row + 2) * 7) + column + 2])
+                )
             ):
                 score += current_player(board)
         else:
-            if board.spaces[((j + 1) * 7) + i + 1] != 0:
+            if board.spaces[((row + 1) * 7) + column + 1] != 0:
                 # 0111
-                if (board.spaces[((j + 1) * 7) + i + 1]
-                    == board.spaces[((j + 2) * 7) + i + 2]
-                    == board.spaces[((j + 3) * 7) + i + 3]
+                if (
+                    board.spaces[((row + 1) * 7) + column + 1]
+                    == board.spaces[((row + 2) * 7) + column + 2]
+                    == board.spaces[((row + 3) * 7) + column + 3]
                 ):
-                    if ((board.spaces[((j + 1) * 7) + i + 1] == current_player(board))
-                    and (can_place(board, (j * 7) + i))
+                    if (
+                        (board.spaces[((row + 1) * 7) + column + 1] == current_player(board))
+                        and (can_place(board, (row * 7) + column))
                     ):
                         score += (1000 * current_player(board))
                     else:
                         score += 7 * current_player(board)
                 if (
-                # 0110
+                    # 0110
+                        (
                             (
-                    (board.spaces[((j + 1) * 7) + i + 1]
-                    == board.spaces[((j + 2) * 7) + i + 2])
-                and (board.spaces[((j + 3) * 7) + i + 3])
-                            )
-                # 0101
+                            board.spaces[((row + 1) * 7) + column + 1]
+                            == board.spaces[((row + 2) * 7) + column + 2])
+                            and (board.spaces[((row + 3) * 7) + column + 3]
+                        )
+                    )
+                    # 0101
                 or (
-                    (board.spaces[((j + 1) * 7) + i + 1]
-                    == board.spaces[((j + 3) * 7) + i + 3])
-                and (0
-                    == board.spaces[((j + 2) * 7) + i + 2])
+                        (
+                        board.spaces[((row + 1) * 7) + column + 1]
+                        == board.spaces[((row + 3) * 7) + column + 3]
+                    )
+                and (
+                    0
+                    == board.spaces[((row + 2) * 7) + column + 2])
                             )
                 ):
                     score += current_player(board)
@@ -497,11 +518,11 @@ def space_heuristic(board: Board, i: int, j: int) -> int:
             else:
                 # 0011
                 if (
-                    (board.spaces[((j + 2) * 7) + i + 2] != 0)
-                and (
-                        board.spaces[((j + 2) * 7) + i + 2]
-                    == board.spaces[((j + 3) * 7) + i + 3]
-                            )
+                    (board.spaces[((row + 2) * 7) + column + 2] != 0)
+                    and (
+                        board.spaces[((row + 2) * 7) + column + 2]
+                        == board.spaces[((row + 3) * 7) + column + 3]
+                    )
                 ):
                     score += current_player(board)
 
