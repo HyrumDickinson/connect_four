@@ -1,6 +1,6 @@
-'''
+"""
 minimal main launcher
-'''
+"""
 
 from game import Game
 

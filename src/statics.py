@@ -1,11 +1,11 @@
-'''
+"""
 contains statics
-statics are mostly board functions, kept separate from Board to keep Board lightweight
-'''
+mostly board functions, kept separate from Board to keep Board lightweight
+"""
 
 import random
 import numpy as np
-from board import Board
+from src.board import Board
 from heuristic import heuristic
 from board_functions import (
     next_moves,
@@ -17,12 +17,14 @@ from board_functions import (
 
 
 def get_best_move(board: Board, depth: int) -> None:
-    '''
+    """
     _summary_
 
     Args:
         depth (int): _description_
-    '''
+        :param depth:
+        :param board:
+    """
 
     if depth == 0:
         return
@@ -50,13 +52,13 @@ def minimax(
     alpha: float = -np.inf,
     beta: float = np.inf
 ):
-    '''
+    """
     looks one move ahead and returns best move based on heuristic if depth == 1
     else returns heuristic of chosen best move
 
     Returns:
         int: _description_
-    '''
+    """
 
     assert depth > 0, 'searching too far'
 
@@ -107,7 +109,7 @@ def minimax(
 
 
 def minimaxx(board: Board, depth: int, original_depth: int, alpha: int, beta: int) -> Board:
-    '''
+    """
     this should create boards and analyze them
 
     Args:
@@ -118,7 +120,12 @@ def minimaxx(board: Board, depth: int, original_depth: int, alpha: int, beta: in
 
     Returns:
         _type_: _description_
-    '''
+        :param depth:
+        :param original_depth:
+        :param alpha:
+        :param beta:
+        :param board:
+    """
     if depth == 0:
         return board
 
@@ -128,7 +135,7 @@ def minimaxx(board: Board, depth: int, original_depth: int, alpha: int, beta: in
     if current_player(board) == 1:
         max_eval = np.inf * current_player(board)
         for mov in moves:
-
+            # TODO where does i come from
             if mov.spaces[i] == 0:
                 drop_piece_into_column(mov, i)
                 move = minimax(mov, depth - 1, original_depth, alpha, beta)
@@ -164,7 +171,7 @@ def minimaxx(board: Board, depth: int, original_depth: int, alpha: int, beta: in
 
 
 def pre_alpha_beta(board: Board, depth: int, original_depth: int):
-    '''
+    """
     _summary_
 
     Args:
@@ -173,7 +180,10 @@ def pre_alpha_beta(board: Board, depth: int, original_depth: int):
 
     Returns:
         _type_: _description_
-    '''
+        :param depth:
+        :param original_depth:
+        :param board:
+    """
     if depth == 0:
         return board
 

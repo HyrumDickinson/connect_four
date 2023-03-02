@@ -1,13 +1,13 @@
-'''
+"""
 contains board class
-'''
+"""
 import numpy as np
 
 
 class Board:
-    '''
+    """
     the board is a 7 x 6, seven being the horizontal length
-    the indicies begin in the top left corner, and run horizontally
+    the indices begin in the top left corner, and run horizontally
     to the right, like you would read a sentence, so,
     mapping the array to the board squares:
 
@@ -23,7 +23,7 @@ class Board:
         5      35 36 37 38 39 40 41
 
 
-    '''
+    """
 
     def __init__(self, board='new'):
 

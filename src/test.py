@@ -1,6 +1,6 @@
-'''
+"""
 minimal main launcher
-'''
+"""
 
 from game import Game
 
@@ -15,9 +15,8 @@ if __name__ == '__main__':
     # Game('heuristic', 'heuristic').play(99)
     # Game('heuristic', 'minimax').play()
     # Game('minimax', 'heuristic').play()
-    game = Game('minimax', 'minimax')
-    game.player_1.depth = 1
-    game.player_2.depth = 2
+    game = Game('human', 'minimax')
+    game.player_2.depth = 4
     game.play(10)
 
     # Game('random', 'random').play(9)

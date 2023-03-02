@@ -1,20 +1,22 @@
-'''
+"""
 statics that are actually board methods
-but separate because i want to create Boards en masse
+but separate because I want to create Boards en masse
 so these are separated to keep the Board class lightweight
-'''
+"""
 
 import numpy as np
-from board import Board
+from src.board import Board
 
 
 def drop_piece_into_column(board: Board, column: int):
-    '''
+    """
     set_space and select_space for look_ahead function
 
     Args:
         column (int): _description_
-    '''
+        :param column:
+        :param board:
+    """
 
     assert isinstance(column, int), f'column should be int but is {type(column)}'
     assert isinstance(board, Board), f'board should be Board but is {type(board)}'
@@ -39,9 +41,9 @@ def drop_piece_into_column(board: Board, column: int):
 
 
 def current_player(board: Board) -> int:
-    '''
+    """
     compute whose turn it is based on the existing turn
-    '''
+    """
 
     turn_sum = 0
     for space in board.spaces:
@@ -54,12 +56,12 @@ def current_player(board: Board) -> int:
 
 
 def next_moves(board: Board) -> dict[int: Board]:
-    '''
+    """
     _summary_
 
     Returns:
         dict[int: Board]: column mapped Board after move is made in that column
-    '''
+    """
 
     possible_moves = {}
 
@@ -76,12 +78,12 @@ def next_moves(board: Board) -> dict[int: Board]:
 
 
 def copy_board(board: Board) -> Board:
-    '''
+    """
     copy the board
 
     Returns:
         Board: _description_
-    '''
+    """
 
     board_copy = Board()
     board_copy.spaces = np.array(list(board.spaces))
@@ -89,9 +91,9 @@ def copy_board(board: Board) -> Board:
 
 
 def print_board(board: Board) -> None:
-    '''
+    """
     provide visual printout of board
-    '''
+    """
 
     print('\n')
     for row in range(6):
@@ -101,7 +103,7 @@ def print_board(board: Board) -> None:
 
 
 def print_space(board: Board, column: int, row: int) -> str:
-    '''
+    """
     convert a space to a string (for display)
 
     Args:
@@ -110,7 +112,10 @@ def print_space(board: Board, column: int, row: int) -> str:
 
     Returns:
         str: _description_
-    '''
+        :param row:
+        :param column:
+        :param board:
+    """
 
     assert board.spaces[(row * 7) + column] in (-1, 0, 1)
 
@@ -122,7 +127,7 @@ def print_space(board: Board, column: int, row: int) -> str:
 
 
 def can_place(board: Board, space: int) -> bool:
-    '''
+    """
     check if legal move can be made at space
 
     Args:
@@ -130,7 +135,9 @@ def can_place(board: Board, space: int) -> bool:
 
     Returns:
         bool: True if space is legal move option
-    '''
+        :param space:
+        :param board:
+    """
 
     assert (-1 < space < 42), 'space does not exist; choose between 0-41'
     if not board.spaces[space] == 0:
@@ -143,19 +150,19 @@ def can_place(board: Board, space: int) -> bool:
 
 
 def reset_board(board: Board) -> None:
-    '''
+    """
     reset the board
-    '''
+    """
     board.spaces = np.zeros(42, int)
 
 
 def get_valid_moves(board: Board) -> list[int]:
-    '''
+    """
     returns list of all squares where can_place is True
 
     Returns:
         list: valid move options
-    '''
+    """
     valid_moves = []
     for i in range(42):
         if can_place(board, i):

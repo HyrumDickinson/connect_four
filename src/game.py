@@ -1,9 +1,9 @@
-'''
+"""
 contains game class
-'''
+"""
 
 import numpy as np
-from board import Board
+from src.board import Board
 from player import Player
 from heuristic import heuristic
 from statics import minimax
@@ -17,9 +17,9 @@ from board_functions import (
 
 
 class Game:
-    '''
+    """
     game class
-    '''
+    """
     def __init__(
         self,
         player_1: str = 'human',
@@ -54,9 +54,9 @@ class Game:
         self.board = Board()
 
     def play(self, rounds: int = 1) -> None:
-        '''
+        """
         play the game
-        '''
+        """
         # play matches
         matches = []
         for _ in range(rounds):
@@ -97,14 +97,14 @@ class Game:
         print(f'{self.player_1.name} {player_1_score}-{draw_count}-{player_2_score} {self.player_2.name}')
 
     def play_turn(self) -> None:
-        '''
+        """
         play a turn in tictactoe
 
         Args:
             player (str, optional): _description_. Defaults to 'human'.
             turns (int, optional): _description_. Defaults to 1.
             depth (int, optional): _description_. Defaults to 4.
-        '''
+        """
 
         if self.turn == 1:
             player = self.player_1
@@ -155,18 +155,18 @@ class Game:
         self.__update_result()
 
     def reset(self) -> None:
-        '''
+        """
         reset the game
-        '''
+        """
         self.turn = 1
         self.result = 0
         self.move_count = 0
         reset_board(self.board)
 
     def __update_result(self) -> None:
-        '''
+        """
         vital function that updates self.result. This function works!
-        '''
+        """
         for row in range(6):
             for column in range(7):
 
@@ -215,7 +215,7 @@ class Game:
                     return
 
         # if no wins are found, self.result is set to 0.
-        # This could be useful if I decide to integrate move takebacks
+        # This could be useful if I decide to integrate move take-backs
 
         # check draw (i.e. is the board full)
         for row in range(6):

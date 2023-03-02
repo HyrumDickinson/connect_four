@@ -1,12 +1,12 @@
-'''
+"""
 contains simple player class
-'''
+"""
 
 
 class Player:
-    '''
+    """
     player class
-    '''
+    """
 
     def __init__(self, strategy: str, my_turn: bool, depth: int = 3):
 
