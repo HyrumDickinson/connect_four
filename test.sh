@@ -1,0 +1,1 @@
+pytest --cov=src/<insert package name> tests/
